@@ -1,11 +1,47 @@
 import { GraphQLServer } from 'graphql-yoga'
 
-//working with arrays of scalar types
+//working with arrays of custom types
+
+//Demo user data
+const users = [{
+    id: '1',
+    name: 'Sido',
+    email: 'sid@example.com',
+    age: '22'
+},{
+    id: '2',
+    name: 'Garry',
+    email: 'garry@example.com',
+    age: '30'
+},{
+    id: '3',
+    name: 'Shelly',
+    email: 'shelly@example.com',
+   
+}]
+
+const posts = [{
+    id: '123',
+    title: 'Make it',
+    body: 'Making it as a startup founder in your 20s',
+    published: true
+}, {
+        id: '1234',
+        title: 'Saas companies',
+        body: 'Why Saas companies prosper, get all the bits here',
+        published: false
+    }, {
+        id: '1235',
+        title: 'Founder Mentality',
+        body: 'First and foremost, should you be the CEO?',
+        published: false
+    },
+]
+
 const typeDefs = `
     type Query{
-        greeting( name: String, position: String ): String!
-        add(numbers: [Float!]!): Float!
-        grades: [Int!]!
+        users(query: String): [User!]!
+        posts(query: String): [Post!]!
         me: User!
         post: Post!
     }
@@ -13,8 +49,8 @@ const typeDefs = `
     type User {
         id: ID!
         name: String!
-        email: String
-        age: Int!
+        email: String!
+        age: Int
     }
 
     type Post {
@@ -30,27 +66,27 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
-        greeting(parent,args,ctx,info) {
-            if(args.name && args.position){
-                return `Hello, ${args.name}! You are my favourite ${args.position}`
-            }else{
-                return 'Hello'
-            }
-            
-        },
-        add(parent, args, ctx, info){
-            if(args.numbers.length===0){
-                return 0
+
+        users(parent, args, ctx, info){
+            if (!args.query) {
+                return users
             }
 
-            //[1, 5, 10, 2]
-            return args.numbers.reduce((accumulator, current) =>{
-                return accumulator + current
+            return users.filter((user) => {
+                return user.name.toLocaleLowerCase().includes(args.query.toLocaleLowerCase())
             })
         },
-        grades(parent, args, ctx, info) {
-            return [90, 80, 97]
+
+        posts(parent, args, ctx, info) {
+            if (!args.query) {
+                return posts
+            }
+
+            return posts.filter((post) =>{
+                return post.title.toLocaleLowerCase().includes(args.query.toLocaleLowerCase())
+            })
         },
+        
        me() {
            return {
                id: '123098',
