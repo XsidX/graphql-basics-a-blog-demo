@@ -1,13 +1,14 @@
 import { GraphQLServer } from 'graphql-yoga'
 
-//Type definitions [schema]--->operations ans datastructures
-
+//Type definitions [schema]--->operations and datastructures
+// Scalar types----->String, Boolean, Int, Float, ID
 const typeDefs = `
     type Query{
-        hello: String!
+        id: ID!
         name: String!
-        location: String!
-        bio: String!
+        age: Int!
+        employed: Boolean!
+        gpa: Float
     }
 `
     
@@ -16,17 +17,20 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
-        hello() {
-            return 'This is my first query'
+        id() {
+            return 'abc123'
         },
         name() {
-            return 'Sidney Kaguli'
+            return 'Sido'
         },
-        location() {
-            return 'Nairobi'
+        age() {
+            return 22
         },
-        bio() {
-            return 'Startup founder'
+        employed() {
+            return true
+        },
+        gpa() {
+            return null
         }
     }
 }
@@ -37,5 +41,5 @@ const server = new GraphQLServer({
 })
 
 server.start(() =>{
-    console.log('The server is up!')
+    console.log('The server is up! on localhost:4000...')
 }) 
