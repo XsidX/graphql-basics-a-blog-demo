@@ -1,8 +1,9 @@
 import { GraphQLServer } from 'graphql-yoga'
 
-//custom types
+//operation arguments
 const typeDefs = `
     type Query{
+        greeting( name: String, position: String ): String!
         me: User!
         post: Post!
     }
@@ -27,6 +28,14 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
+        greeting(parent,args,ctx,info) {
+            if(args.name && args.position){
+                return `Hello, ${args.name}! You are my favourite ${args.position}`
+            }else{
+                return 'Hello'
+            }
+            
+        },
        me() {
            return {
                id: '123098',
