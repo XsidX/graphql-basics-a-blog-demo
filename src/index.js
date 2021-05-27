@@ -1,6 +1,6 @@
 import { GraphQLServer } from 'graphql-yoga'
 
-//Relational data basics
+//Relational data Arrays
 
 //Demo user data
 const users = [{
@@ -25,28 +25,55 @@ const posts = [{
     title: 'Make it',
     body: 'Making it as a startup founder in your 20s',
     published: true,
-    author: '1'
+    author: '1',
+    
 }, {
         id: '1234',
         title: 'Saas companies',
         body: 'Why Saas companies prosper, get all the bits here',
         published: false,
-        author: '1'
+    author: '1',
+    
     }, {
-        id: '1235',
+        id: '12345',
         title: 'Founder Mentality',
         body: 'First and foremost, should you be the CEO?',
         published: false,
-        author: '2'
+    author: '2',
+  
     },
 ]
+
+const comments = [{
+    id: 'c1',
+    text: 'Great perspective right there',
+    author: '1',
+    post: '123'
+    }, {
+        id: 'c2',
+        text: 'This is the best thing I have read today',
+    author: '1',
+    post: '123'
+    }, {
+        id: 'c3',
+        text: 'Oh, who knew thaaaat!!',
+    author: '2',
+    post: '1234'
+    }, {
+        id: 'c4',
+        text: 'Just wow...',
+    author: '3',
+    post: '12345'
+    },]
+
+
 
 const typeDefs = `
     type Query{
         users(query: String): [User!]!
         posts(query: String): [Post!]!
-        me: User!
-        post: Post!
+        comments: [Comment!]!
+       
     }
 
     type User {
@@ -54,6 +81,9 @@ const typeDefs = `
         name: String!
         email: String!
         age: Int
+        posts: [Post!]!
+        comments: [Comment!]
+
     }
 
     type Post {
@@ -62,6 +92,16 @@ const typeDefs = `
         body: String!
         published: Boolean!
         author: User!
+        comments: [Comment!]
+        
+    }
+
+    type Comment {
+        id: ID!
+        text: String!
+        author: User!
+        post: Post!
+        
     }
 `
     
@@ -91,22 +131,8 @@ const resolvers = {
             })
         },
         
-       me() {
-           return {
-               id: '123098',
-               name: 'sid',
-            //    email: 'sid2example.com',
-               age: 22
-           }
-       },
-
-       post() {
-            return {
-                id: '123',
-                title: 'Make it',
-                body: 'Making it as a startup founder in your 20s',
-                published: false
-            }
+       comments(parent, args, ctx, info) {
+           return comments
        }
        
     },
@@ -115,8 +141,42 @@ const resolvers = {
             return users.find((user) =>{
                 return user.id === parent.author
             })
+        },
+        comments(parent, args, ctx, info) {
+            return comments.filter((comment) => {
+                return comment.post === parent.id
+            })
         }
-    }
+    },
+    Comment: {
+        author(parent, args, ctx, info) {
+            return users.find((user) => {
+                return user.id === parent.author
+            })
+        },
+        post(parent, args, ctx, info) {
+            return posts.find((post) => {
+                return post.id === parent.post
+            })
+        }
+
+    },
+    User: {
+        posts(parent, args, ctx, info){
+            return posts.filter((post) =>{
+                return post.author === parent.id
+            })
+        },
+        comments(parent, args, ctx, info) {
+            return comments.filter((comment) => {
+                return comment.author === parent.id
+            })
+        }
+    },
+
+    
+
+
 }
 
 const server = new GraphQLServer({
