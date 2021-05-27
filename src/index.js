@@ -1,6 +1,6 @@
 import { GraphQLServer } from 'graphql-yoga'
 
-//working with arrays of custom types
+//Relational data basics
 
 //Demo user data
 const users = [{
@@ -24,17 +24,20 @@ const posts = [{
     id: '123',
     title: 'Make it',
     body: 'Making it as a startup founder in your 20s',
-    published: true
+    published: true,
+    author: '1'
 }, {
         id: '1234',
         title: 'Saas companies',
         body: 'Why Saas companies prosper, get all the bits here',
-        published: false
+        published: false,
+        author: '1'
     }, {
         id: '1235',
         title: 'Founder Mentality',
         body: 'First and foremost, should you be the CEO?',
-        published: false
+        published: false,
+        author: '2'
     },
 ]
 
@@ -58,6 +61,7 @@ const typeDefs = `
         title: String!
         body: String!
         published: Boolean!
+        author: User!
     }
 `
     
@@ -105,6 +109,13 @@ const resolvers = {
             }
        }
        
+    },
+    Post: {
+        author(parent, args, ctx, info){
+            return users.find((user) =>{
+                return user.id === parent.author
+            })
+        }
     }
 }
 
