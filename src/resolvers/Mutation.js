@@ -47,36 +47,35 @@ const Mutation = {
 
         return deletedUsers[0]
     },
+    //destructure args
+    updateUser(parent, { id, data }, { db }, info) {
 
-    deletePost(parent, args, { db }, info) {
+        const user = db.users.find((user) => user.id === id)
 
-        const postIndex = db.posts.findIndex((post) => post.id === args.id)
-
-        if (postIndex === -1) {
-            throw new Error('Post not found!')
+        if(!user) {
+            throw new Error( 'User not Found!' )
         }
 
-        const deletedPosts = db.posts.splice(postIndex, 1)
+        if (typeof data.email === 'string') {
+            const emailTaken = db.users.some((user) => user.email === data.email)
 
-        db.comments = db.comments.filter((comment) => comment.post !== args.id)
+            if (emailTaken) {
+                throw new Error( 'Email taken' )
+            }
 
 
-
-        return deletedPosts[0]
-
-    },
-
-    deleteComment(parent, args, { db }, info) {
-        const commentIndex = db.comments.findIndex((comment) => comment.id === args.id)
-
-        if (commentIndex === -1) {
-            throw new Error('Comment not found!')
+            user.email = data.email
         }
 
-        const deletedComment = db.comments.splice(commentIndex, 1)
+        if (typeof data.name === 'string') {
+            user.name = data.name
+        }
 
-        return deletedComment[0]
+        if (typeof data.age !== 'undefined') {
+            user.age = data.age
+        }
 
+        return user
     },
 
     createPost(parent, args, { db }, info) {
@@ -96,6 +95,62 @@ const Mutation = {
 
     },
 
+    deletePost(parent, args, { db }, info) {
+
+        const postIndex = db.posts.findIndex((post) => post.id === args.id)
+
+        if (postIndex === -1) {
+            throw new Error('Post not found!')
+        }
+
+        const deletedPosts = db.posts.splice(postIndex, 1)
+
+        db.comments = db.comments.filter((comment) => comment.post !== args.id)
+
+
+
+        return deletedPosts[0]
+
+    },
+
+    updatePost(parent, { id, data }, { db }, info ) {
+        const post = db.posts.find((post) => post.id === id)
+
+        if(!post) {
+            throw new Error( "Post not Found!" )
+        }
+        if(typeof data.title === 'string'){
+        post.title = data.title
+        }
+
+        if (typeof data.body === 'string'){
+        post.body = data.body
+        }
+
+        if (typeof data.published === 'boolean'){
+        post.published= data.published
+        }
+
+        return post
+
+
+    },
+
+    deleteComment(parent, args, { db }, info) {
+        const commentIndex = db.comments.findIndex((comment) => comment.id === args.id)
+
+        if (commentIndex === -1) {
+            throw new Error('Comment not found!')
+        }
+
+        const deletedComment = db.comments.splice(commentIndex, 1)
+
+        return deletedComment[0]
+
+    },
+
+    
+
     createComment(parent, args, { db }, info) {
         const userExists = db.users.some((user) => user.id === args.data.author)
         const postExists = db.posts.some((post) => post.id === args.data.post)
@@ -113,6 +168,21 @@ const Mutation = {
 
         db.comments.push(comment)
         return comment
+    },
+
+    updateComment(parent, { id, data}, { db }, info) {
+        const comment = db.comments.find((comment) => comment.id === id)
+
+        if(!comment){
+            throw new Error("Comment not Found!")
+        }
+
+        if(typeof data.text === 'string'){
+        comment.text = data.text
+        }
+
+        return comment
+        
     }
 }
 
