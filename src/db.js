@@ -29,11 +29,11 @@ const posts = [{
     published: false,
     author: '1',
 
-}, {
+}, { 
     id: '12345',
     title: 'Founder Mentality',
     body: 'First and foremost, should you be the CEO?',
-    published: false,
+    published: true,
     author: '2',
 
 },
