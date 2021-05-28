@@ -1,5 +1,17 @@
 import { v4 as uuidv4 } from 'uuid'
 
+//Enum
+//1. A special type that defines a set of constants.
+//2. This type can be used as the type for a field( similar to scalar and custom types)
+//3. Values for the field must be one of the constants for the type
+
+
+//UserRole ---standard, editor, admin
+
+// type User{
+//     role: UserRole!
+// }
+
 
 const Mutation = {
 
